@@ -4,6 +4,14 @@ These files have been generated with the Designer program by [TSE](https://www.t
 
 They are published here to help users to either implement the same experimental design or use them as an inspiration to create variations for their experimental needs.
 
+This sets contains the following 4 programs:
+
+- Free Adaptation Template.experiment
+- Water Training Template.experiment
+- Intermittent Alcohol Template.experiment
+- Open Bar Template.experiment
+
+
 _Note:_
 All templates come with 4 entered animals to serve as an example for grouping and use of clusters. The entries will need to be deleted and replaced with the information for the current cohort before use.
 
