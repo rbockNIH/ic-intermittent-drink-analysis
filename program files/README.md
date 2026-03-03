@@ -1,7 +1,34 @@
 # IntelliCage Programs
 
+These files have been generated with the Designer program by [TSE](https://www.tse-systems.com) to control the [IntelliCages](https://www.tse-systems.com/products/intellicage/) and are only useful in conjuction with the cages and propriatary software. 
+
+They are published here to help users to either implement the same experimental design or use them as an inspiration to create variations for their experimental needs.
+
+This sets contains the following 4 programs:
+
 - Free Adaptation Template.experiment
 - Water Training Template.experiment
 - Intermittent Alcohol Template.experiment
 - Open Bar Template.experiment
 
+
+_Note:_
+All templates come with 4 entered animals to serve as an example for grouping and use of clusters. The entries will need to be deleted and replaced with the information for the current cohort before use.
+
+## Free Adaptation Template.experiment
+
+This template allows a new cohort of mice to freely explore all corners of a cage to habituate them to their new environment. Each visits triggers the doors to open. They stay open until the visit ends. This requires the animals to be implanted with the RFID transmitter. The resulting data will give a snapshot of potential biases for individual animals for specific corners. 
+
+Creating and assigning animals to groups before the start of the program will help with later analysis, though all of them will use the same module and cluster. The default cluster sets all corners to neutral and is the only cluster used in this program.
+
+## Water Training Template.experiment
+
+Train all animals to go from fixed ratio 1 to fixed ratio 3 (FR3) with only access to water.
+
+## Intermittent Alcohol Template.experiment
+
+Intermittent alcohol access every other day on a FR3.
+
+## Open Bar Template.experiment
+
+Test alcohol drinking without the need for operant controlled access (doors open upon visit).
