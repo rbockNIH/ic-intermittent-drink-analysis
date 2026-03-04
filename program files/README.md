@@ -9,7 +9,7 @@ This sets contains the following 4 programs:
 - [Free Adaptation Template _.experiment_](#free-adaptation-template-experiment)
 - [Water Training Template _.experiment_](#water-training-template-experiment)
 - [Intermittent Alcohol Template _.experiment_](#intermittent-alcohol-template-experiment)
-- [Open Bar Template _.experiment_](#open-bar-template-experiment]
+- [Open Bar Template _.experiment_](#open-bar-template-experiment)
 
 
 _Note:_
