@@ -13,7 +13,7 @@ This sets contains the following 4 programs:
 
 
 _Note:_
-All templates come with 4 entered animals to serve as an example for grouping and use of clusters. The entries will need to be deleted and replaced with the information for the current cohort before use.
+All templates come with 4 entered animals to serve as an example for grouping and use of clusters. The entries will need to be deleted and replaced with the information for the current cohort before use. It is also set to work on IntelliCage 1 and 2. If your setup uses more cages or different cage id number, the would need to be changed in the `Setup` tab. 
 
 ## Free Adaptation Template _.experiment_
 
