@@ -12,4 +12,4 @@ The notebook contains a code chunk that will write the summarized data for each 
 
 # Who should I talk to?
 
-me
+Please reach out to my publicly listed email in my profile with any questions.
