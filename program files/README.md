@@ -19,11 +19,13 @@ All templates come with 4 entered animals to serve as an example for grouping an
 
 This template allows a new cohort of mice to freely explore all corners of a cage to habituate them to their new environment. Each visits triggers the doors to open. They stay open until the visit ends. This requires the animals to be implanted with the RFID transmitter. The resulting data will give a snapshot of potential biases for individual animals for specific corners. 
 
-Creating and assigning animals to groups before the start of the program will help with later analysis, though all of them will use the same module and cluster. The default cluster sets all corners to neutral and is the only cluster used in this program.
+Creating and assigning animals to groups before the start of the program will help with later analysis, though all of them will use the same module and cluster. The Default cluster sets all corners to neutral and is the only cluster used in this program.
 
 ## Water Training Template _.experiment_
 
-Train all animals to go from fixed ratio 1 to fixed ratio 3 (FR3) with only access to water.
+The intention with this program is to train all animals to go from fixed ratio 1 to fixed ratio 3 (FR3) to open any door. All corners contain water bottles and they are free to choose which corner they prefer. A single nosepoke into any door will open the doors for the corner. A visits without any poke will be counted as a failure to calculate the 60% success rate. After reaching the success rate, the module switches for each animal individually to the FR3 ratio, i.e. now the animal has to poke 3 times for the doors to open. Once they mice reach the FR3, the program continues until the experimentator decides to terminate the program. 
+
+The groups and cluster assignments are not strictly necessary to successfully train the animals, but prior group assignment will make the analysis and monitoring much easier.
 
 ## Intermittent Alcohol Template _.experiment_
 
