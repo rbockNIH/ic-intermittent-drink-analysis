@@ -6,7 +6,7 @@ They are published here to help users to either implement the same experimental 
 
 This sets contains the following 4 programs:
 
-- Free Adaptation Template.experiment
+- [Free Adaptation Template_.experiment_](#free-adaptation-templateexperiment)
 - Water Training Template.experiment
 - Intermittent Alcohol Template.experiment
 - Open Bar Template.experiment
@@ -15,20 +15,20 @@ This sets contains the following 4 programs:
 _Note:_
 All templates come with 4 entered animals to serve as an example for grouping and use of clusters. The entries will need to be deleted and replaced with the information for the current cohort before use.
 
-## Free Adaptation Template.experiment
+## Free Adaptation Template_.experiment_
 
 This template allows a new cohort of mice to freely explore all corners of a cage to habituate them to their new environment. Each visits triggers the doors to open. They stay open until the visit ends. This requires the animals to be implanted with the RFID transmitter. The resulting data will give a snapshot of potential biases for individual animals for specific corners. 
 
 Creating and assigning animals to groups before the start of the program will help with later analysis, though all of them will use the same module and cluster. The default cluster sets all corners to neutral and is the only cluster used in this program.
 
-## Water Training Template.experiment
+## Water Training Template_.experiment_
 
 Train all animals to go from fixed ratio 1 to fixed ratio 3 (FR3) with only access to water.
 
-## Intermittent Alcohol Template.experiment
+## Intermittent Alcohol Template_.experiment_
 
 Intermittent alcohol access every other day on a FR3.
 
-## Open Bar Template.experiment
+## Open Bar Template_.experiment_
 
 Test alcohol drinking without the need for operant controlled access (doors open upon visit).
