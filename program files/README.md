@@ -6,7 +6,7 @@ They are published here to help users to either implement the same experimental 
 
 This sets contains the following 4 programs:
 
-- [Free Adaptation Template_.experiment_](#free-adaptation-templateexperiment)
+- [Free Adaptation Template _.experiment_](#free-adaptation-templateexperiment)
 - Water Training Template.experiment
 - Intermittent Alcohol Template.experiment
 - Open Bar Template.experiment
