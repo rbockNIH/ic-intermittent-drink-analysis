@@ -590,6 +590,50 @@ visits <- visits %>%
 ```
 
 
+### Corner Occupancy (Visit Durations)
+
+```{r}
+#| label: fig-qc-visit-durations-perCorner
+#| fig-width: 10
+#| fig-height: 6
+
+p1 <- visits %>% 
+  mutate(vd = End - Start) %>% 
+  group_by(Animal, Sex, Group, exp_Day, Session, Corner) %>% 
+  summarize(VD_mean = mean(vd),
+            VD_sd = sd(vd),
+            VD_total = sum(vd), 
+            VD = lubridate::as_datetime(as.integer(VD_total)), .groups = "keep") %>% 
+  
+  ggplot(aes(x = exp_Day, y = VD, fill = Sex)) +
+  geom_point(aes(shape = Sex), color = "gray25") +
+  
+  scale_shape_manual(values = c("Female" = 21, "Male" = 22)) +
+  scale_y_datetime(name = "corner occupancy/24 h", 
+                   date_labels = "%H:%M") +
+  labs(x = "experiment day",
+       title = paste("Cohort", cohort, "Corner Occupancy"),
+       subtitle = "Check for animals preventing access to specific corners",
+       caption = "Dashed gray line: Corner switch between water and respective drug.") +
+  sexFillScale +
+  guides(fill = "none") +
+  theme_minimal(base_family = bFont, base_size = bSize) +
+  theme(panel.spacing = unit(1, "lines"),
+        strip.background = element_rect(color = "gray"),
+        strip.text = element_text(face = "italic", color = "gray25")) +
+  facet_grid(Corner ~ ., 
+             scale = "free_y",
+             labeller = labeller(Corner = c("1" = "water", "2" = "OXY", "3" = "water", "4" = "MPH")))
+
+ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-qc-corner-occupancy-perDay.png")), plot = p1, width = 10, height = 6)
+
+p1
+
+```
+
+
+
+### Licks for Alcohol and Water
 
 ```{r}
 #| label: fig-intake-check-per-lbl

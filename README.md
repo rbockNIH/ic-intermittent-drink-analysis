@@ -10,6 +10,13 @@ The project template is centered around the analysis being done in notebook file
 
 The notebook contains a code chunk that will write the summarized data for each cohort as an `.rds` file, which can be quickly read without needed data wrangling. This leaves as a basic analysis structure at least one notebook for each cohort and one notebook file for a summary/combined analysis of all participating cohorts.
 
+# Publications
+
+The IntelliCage programs have been used to generate the data sets contributing to the following publications:
+
+1. Bocarsley, ME _et al._ **Preexisting risk-avoidance and enhanced alcohol relief are driven by imbalance of the striatal dopamine receptors in mice**. Nature Communications (2024), doi: [10.1038/s41467-024-53414-y](https://www.nature.com/articles/s41467-024-53414-y)
+2. Anderson LG _et al._ **Early life adversity increases striatal dopamine D1 receptor density and promotes social alcohol drinking in mice, especially males**. bioRxiv (2025), doi: [10.1101/2025.11.10.687736](https://doi.org/10.1101/2025.11.10.687736)
+
 # Who should I talk to?
 
-Please reach out to my publicly listed email in my profile with any questions.
+For any questions regaring these programs, please contact me at my publicly available email for this repository.
