@@ -1,0 +1,10 @@
+project:
+  title: "IntelliCage Template Project"
+  output-dir: _output
+
+number-sections: true
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
