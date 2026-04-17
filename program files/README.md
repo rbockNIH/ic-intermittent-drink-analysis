@@ -2,7 +2,7 @@
 
 These files have been generated with the Designer program by [TSE](https://www.tse-systems.com) to control the [IntelliCages](https://www.tse-systems.com/products/intellicage/) and are only useful in conjuction with the cages and propriatary software. 
 
-They are published here to help users to either implement the same experimental design or use them as an inspiration to create variations for their experimental needs.
+They are published here to help users to either implement the same experimental design or use them as an inspiration to create variations for their experimental needs. They have been created with the version 3.6.9.0 of the Designer and used with the same version of the Controller.
 
 This sets contains the following 4 programs:
 
@@ -42,7 +42,8 @@ During our experiments the question arose if the test animals will drink differe
 These programs have been used to generate the data sets contributing to the following publications:
 
 1. Bocarsley, ME _et al._ **Preexisting risk-avoidance and enhanced alcohol relief are driven by imbalance of the striatal dopamine receptors in mice**. Nature Communications (2024), doi: [10.1038/s41467-024-53414-y](https://www.nature.com/articles/s41467-024-53414-y)
-2. Anderson LG _et al._ **Early life adversity increases striatal dopamine D1 receptor density and promotes social alcohol drinking in mice, especially males**. bioRxiv (2025), doi: [10.1101/2025.11.10.687736](https://doi.org/10.1101/2025.11.10.687736)
+2. Anderson LG _et al._ **Early life adversity increases striatal dopamine D1 receptor density and promotes social alcohol drinking in mice, especially males**. Translational Psychiatry (2026). doi: [10.1038/s41398-026-04033-2](https://www.nature.com/articles/s41398-026-04033-2)
+    - bioRxiv (2025), doi: [10.1101/2025.11.10.687736](https://doi.org/10.1101/2025.11.10.687736)
 
 # Questions
 

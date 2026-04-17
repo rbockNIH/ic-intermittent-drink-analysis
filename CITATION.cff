@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "IntelliCage Intermittent Drinking Analysis Template"
+authors:
+  - family-names: Bock
+    given-names: Roland
+    orcid: https://orcid.org/0000-0002-8654-1080
+  - family-names: Anderson
+    given-names: Lucy
+  - family-names: Averbeck
+    given-names: Theodore
+contact:
+  - affiliation: "National Institute of Mental Health"
+    email: roland.bock@nih.gov
+    family-names: Bock
+    given-names: Roland
+version: 1.0
+date-released: 2026-03-05
+keywords:
+  - "drinking measurement"
+  - "operant behavior"
+  - mouse
+  - "social environment"
+  - IntelliCage
+references:
+  - authors:
+      - name: "TSE Systems"
+        country: DE
+    type: software
+    title: "Designer, Controller, Analyzer"
+    version: 3.6.9.0
+    scope: "Required to use the .experiment files"
+    url: https://www.tse-systems.com/products/intellicage/
