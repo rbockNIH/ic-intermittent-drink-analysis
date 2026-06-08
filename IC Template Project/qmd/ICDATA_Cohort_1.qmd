@@ -14,6 +14,9 @@ author:
       - Investigation
       - Software
       - Visualization
+  - name: Theo Averbeck
+    roles: 
+      - Software
   - name: Veronica Alvarez
     corresponding: true
     email: alvarezva@mail.nih.gov
@@ -35,7 +38,7 @@ param:
 #| message: false
 
 library(easypackages)
-packages("here", "archive", "xml2", "skimr")
+packages("here", "archive", "xml2", "skimr", "ggtext")
 
 rm(list = ls())
 
@@ -48,7 +51,11 @@ cohort <- 1
 
 # Cohort `r cohort` Background
 
-Genetic background of the mouse set.
+## Experimental Information
+
+### Grouping
+
+Background of the mouse set, in this case treatment groups, but can be modified for genotypes.
 
 | label | description |
 |:-------------------------------------|:---------------------------------|
@@ -66,8 +73,14 @@ Genetic background of the mouse set.
 
 To make this template work and easily adaptable for multiple cohorts and avoid clashing variables, the global environment is always cleared at the beginning using the `rm(list = ls())` command. 
 
+### Data File Structure
+
+The `data` folder in the project folder is for all data files. Cohorts are separated into sub-folders starting with `C` followed by the cohort number, i.e. as in this case cohort `r cohort`. All archive files should be in the subfolder `archives`, which makes them easier to load. Additional csv- (e.g. for the weights) or other data files can be stored here, as are the rds-files exported by this template file.
+
+At the beginning we create a list of all available archive files and choose one that contains the complete list of experimental subjects with their correct grouping to load them into the `mice` dataframe.
+
 ```{r}
-#| label: subject-loading-ch
+#| label: subject-loading
 #| code-fold: false
 #| warning: false
 
@@ -87,7 +100,7 @@ mice <- read_tsv(archive_read(archive = arFiles[1], file = 'Animals.txt'),
 
 ```{r}
 #| label: tbl-dataset-size-ch
-#| tbl-cap: "Distribution of sexes and genotypes."
+#| tbl-cap: "Distribution of sexes and groups."
 #| tbl-cap-location: margin
 
 mice %>% 
@@ -98,7 +111,7 @@ mice %>%
   
   gt(rowname_col = "Group") |> 
   tab_header(title = "Mouse Dataset", 
-             subtitle = "Genotype Distribution") |> 
+             subtitle = "Group Distribution") |> 
   sub_missing() |> 
   grand_summary_rows(columns = (Female:total),
                      fns = list(
@@ -124,11 +137,12 @@ mice %>%
 #| label: loading-ref-weight-data
 #| code-fold: true
 
-
 # these weights are the average weights per age for C57B/6J mice, published on the Jackson Laboratories website in 2025. 
 weights_ref <- read_csv(here("data", "BL6_RefWeights.csv"), col_names = T,
                         col_types = "dcdd")
 ```
+
+Load the captured weights for each animal from the csv-file and check if they have been loaded correctly. During the loading procedure the animals age in weeks is calculated. 
 
 ```{r}
 #| label: loading-weight-data
@@ -151,6 +165,10 @@ weights <- read_csv(here(paste0("data/C", cohort), "Weights.csv"),
 
 glimpse(weights)
 ```
+
+## Weights by Age
+
+The following graph displayes the body weights per animal age in weeks on top of the reference weights for C57Bl/6J mice published by Jackson Laboratories. This graph gives a first clue if weight changes follow an expected pattern or represent something unusual.
 
 ```{r}
 #| label: fig-cohort-weights
@@ -203,7 +221,7 @@ weights %>%
 #| label: fig-mouse-weights-byDate
 #| fig-width: 10
 #| fig-height: 5
-#| fig-cap: "Animal weight by genotype since the start of housing them in the IntelliCages (Sucrose and Drug Choice)."
+#| fig-cap: "Animal weight by genotype since the start of housing them in the IntelliCages."
 
 weights %>% 
   inner_join(mice %>% select(Animal, Sex, Group), by = "Animal") %>% 
@@ -224,7 +242,7 @@ weights %>%
   theme_classic(base_family = bFont, base_size = bSize) +
   theme(strip.background = element_rect(color = "gray"),
         strip.text = element_text(face = "italic", color = "gray35"),
-        panel.spacing = unit(1, "lines")) +
+        panel.spacing = unit(1.5, "lines")) +
   facet_grid(~ Group)
 
 ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-weight-changes-pDate.png")), width = 9, height = 5)
@@ -348,6 +366,7 @@ visits <- visits_l %>%
   fill(c(weights, DOB)) %>% 
   mutate(Group = factor(Group, levels = c("Control",
                                           "LBN")),
+         Sex = factor(Sex, levels = c("Female", "Male")),
          Cohort = cohort,
          Age = StartDate - DOB
   ) %>% 
@@ -469,6 +488,7 @@ visits %>%
   
   gt(rowname_col = "Session",
      groupname_col = "Sex") |>
+  tab_header(title = "Individual Mouse Performance") |>
   tab_stubhead("session") |>
   cols_label(Animal = "Mouse",
              Group = "Condition") |>
@@ -503,7 +523,6 @@ If necessary, exclude any mice:
 
 # exclude_LBN <- c("P228148-2") # uncomment this line and add the mouse ids for the mice you might want to exclude and set the include to true
 ```
-
 
 
 Let's make sure the labeling worked correctly and summarise the visits per module and day label in the following table.
@@ -575,7 +594,14 @@ visits %>%
   tab_header(title = md("**Drink Assignment Check**")) |>
   cols_label(exp_Day = "day") |>
   tab_spanner(columns = ("1":"4"),
-              label = "Corner")
+              label = "Corner") |>
+  tab_style_body(
+    style = cell_fill(color = "lightblue"),
+    values = c("water")) |>
+  tab_style_body(
+    style = cell_fill(color = "lightcoral"),
+    values = c("alcohol"))
+  
 ```
 
 ### Drink Assignment Correction
@@ -606,13 +632,14 @@ p1 <- visits %>%
             VD = lubridate::as_datetime(as.integer(VD_total)), .groups = "keep") %>% 
   
   ggplot(aes(x = exp_Day, y = VD, fill = Sex)) +
-  geom_point(aes(shape = Sex), color = "gray25") +
+  geom_jitter(aes(shape = Sex), width = 0.1, color = "gray25") +
   
   scale_shape_manual(values = c("Female" = 21, "Male" = 22)) +
   scale_y_datetime(name = "corner occupancy/24 h", 
                    date_labels = "%H:%M") +
-  labs(x = "experiment day",
-       title = paste("Cohort", cohort, "Corner Occupancy"),
+  scale_x_continuous(name = "experiment day",
+                     n.breaks = 8) +
+  labs(title = paste("Cohort", cohort, "Corner Occupancy"),
        subtitle = "Check for animals preventing access to specific corners",
        caption = "Dashed gray line: Corner switch between water and respective drug.") +
   sexFillScale +
@@ -623,7 +650,7 @@ p1 <- visits %>%
         strip.text = element_text(face = "italic", color = "gray25")) +
   facet_grid(Corner ~ ., 
              scale = "free_y",
-             labeller = labeller(Corner = c("1" = "water", "2" = "OXY", "3" = "water", "4" = "MPH")))
+             labeller = labeller(Corner = c("1" = "water", "2" = "alcohol", "3" = "water", "4" = "alcohol")))
 
 ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-qc-corner-occupancy-perDay.png")), plot = p1, width = 10, height = 6)
 
@@ -632,6 +659,101 @@ p1
 ```
 
 
+```{r}
+#| label: fig-qc-corner-occupancy-heatmap
+#| fig-width: 10
+#| fig-height: 10
+
+# Prepare data with phase labels
+heatmap_data <- visits %>% 
+  mutate(vd = as.numeric(End - Start, units = "hours")) %>%
+  group_by(Animal, Sex, Group, exp_Day, Corner, drink) %>% 
+  summarize(total_hours = sum(vd), .groups = "drop") %>%
+  mutate(Phase = case_when(
+    exp_Day < 1 ~ "Training (Water Only)",
+    exp_Day >= 1 ~ "Intermittent Alcohol"
+  ))
+
+# Training phase heatmap
+p1 <- heatmap_data %>%
+  filter(Phase == "Training (Water Only)" &
+           !exp_Day %in% c(0, 5)) %>%
+  
+  ggplot(aes(x = exp_Day, y = Animal, fill = total_hours)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  
+  scale_fill_gradientn(
+    colors = c("white", "lightyellow", "orange", "red", "darkred"),
+    values = scales::rescale(c(0, 0.5, 1, 2, 4)),
+    limits = c(0, 6),
+    name = "hours/day",
+    na.value = "gray90"
+  ) +
+  scale_x_continuous(name = "experimental day",
+                     breaks = seq(-5, -1, 1),
+                     expand = c(0, 0)) +
+  
+  labs(title = "Training Phase: Corner Occupancy",
+       y = "Animal ID") +
+  
+  theme_minimal(base_family = bFont, base_size = bSize) +
+  theme(panel.spacing = unit(1, "lines"),
+        strip.background = element_rect(fill = "gray90", color = "gray70"),
+        strip.text = element_text(face = "bold", color = "gray30", size = 11),
+        axis.text.y = element_text(size = 7),
+        axis.text.x = element_text(angle = 0),
+        legend.position = "right",
+        panel.grid = element_blank()) +
+  facet_wrap(~ paste("Corner", Corner, "-", drink), ncol = 4)
+
+# Alcohol phase heatmap
+p2 <- heatmap_data %>%
+  filter(Phase == "Intermittent Alcohol" &
+           !exp_Day %in% c(0, 5)) %>%
+  
+  ggplot(aes(x = exp_Day, y = Animal, fill = total_hours)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  
+  scale_fill_gradientn(
+    colors = c("white", "lightyellow", "orange", "red", "darkred"),
+    values = scales::rescale(c(0, 0.5, 1, 2, 4)),
+    limits = c(0, 6),
+    name = "hours/day",
+    na.value = "gray90"
+  ) +
+  
+  scale_x_continuous(name = "experimental day",
+                     breaks = seq(1, 4, 1)) +
+  
+  labs(title = "Intermittent Alcohol Phase: Corner Occupancy",
+       y = "Animal ID") +
+  
+  theme_minimal(base_family = bFont, base_size = bSize) +
+  theme(panel.spacing = unit(1, "lines"),
+        strip.background = element_rect(fill = "gray90", color = "gray70"),
+        strip.text = element_text(face = "bold", color = "gray30", size = 11),
+        axis.text.y = element_text(size = 7),
+        axis.text.x = element_text(angle = 0),
+        legend.position = "right",
+        panel.grid = element_blank()) +
+  
+  facet_wrap(~ paste("Corner", Corner, "-", drink), ncol = 4)
+
+
+# Combine plots
+p_combined <- p1 / p2 +
+  plot_annotation(
+    title = paste("Cohort", cohort, "Corner Occupancy Heatmaps"),
+    subtitle = md("Fire scale: White (0h) &rarr; Yellow &rarr; Orange &rarr; Red &rarr; Dark Red (6+h). White tiles with borders represent no visits."),
+    theme = theme(plot.title = element_text(size = bSize + 2, face = "bold"),
+                  plot.subtitle = element_markdown(size = bSize - 4))
+  )
+
+ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-qc-corner-occupancy-heatmap.pdf")), 
+       plot = p_combined, width = 10, height = 10)
+
+p_combined
+```
 
 ### Licks for Alcohol and Water
 
@@ -675,7 +797,7 @@ Just because we have the data, we should have a peek at the activity pattern ove
 #| label: fig-visit-density-session
 #| fig-width: 10
 #| fig-height: 6
-#| fig-cap: "Histogram of the visit density function for all mice during the retraining phase for water. The black bar on the bottom of the graph indicates the dark phase for the animals. (A) Probability of corner visits during the session. (B) Probability of licks for water."
+#| fig-cap: "Histogram of the visit density function for all mice during the retraining phase for water. The black bar on the bottom of the graph indicates the dark phase for the animals. (A) Probability of corner visits during the session. (B) Probability of nosepokes. (C) Probability of licks for or alcohol."
 
 darkPhase <- visits %>% 
   filter(light == F) %>% 
@@ -693,35 +815,55 @@ p1 <- visits %>%
          adjTime = hms::as_hms(startTime)) %>% 
   
   ggplot(aes(x = adjTime, y = after_stat(density))) +
-  geom_histogram(binwidth = 15 * 60, fill = "gold", color = "gold4") +
+  geom_density(fill = "gold2", color = "gold4", alpha = 0.85, adjust = 1) +
   annotate("rect", xmin = darkPhase$begin, xmax = darkPhase$end,
            ymin = -1e-7, ymax = -1e-6, fill = "black", color = "gray25") +
   
   scale_x_continuous(name = "session time",
                      breaks = c(0, 19800, 41400, 63000, 86400),
                      labels = c("12:30", "18:00", "0:00", "6:00", "12:30")) +
-  labs(title = "Visits during Session",
+  labs(title = "Visits",
        y = "density of visits") +
   theme_minimal(base_size = bSize, base_family = bFont) +
   theme(strip.background = element_rect(fill = "lightgray", color = "white"),
         strip.text = element_text(face = "italic", color = "gray30"),
         panel.spacing = unit(1, "lines"))
 
-
 p2 <- visits %>% 
-  select(Session, Animal, Sex, Group, Start, StartDate, Module, Licks) %>% 
+  select(Session, Animal, Sex, Group, Start, StartDate, Module) %>% 
   mutate(startTime = Start - hours(12) - minutes(30),
          adjTime = hms::as_hms(startTime)) %>% 
   
-  ggplot(aes(x = adjTime, y = after_stat(density), weight = Licks)) +
-  geom_histogram(binwidth = 15 * 60, fill = "lightblue", color = "steelblue") +
+  ggplot(aes(x = adjTime, y = after_stat(density))) +
+  geom_density(fill = "green4", color = "darkgreen", alpha = 0.85, adjust = 1) +
   annotate("rect", xmin = darkPhase$begin, xmax = darkPhase$end,
            ymin = -1e-7, ymax = -1e-6, fill = "black", color = "gray25") +
   
   scale_x_continuous(name = "session time",
                      breaks = c(0, 19800, 41400, 63000, 86400),
                      labels = c("12:30", "18:00", "0:00", "6:00", "12:30")) +
-  labs(title = "Licks during Session",
+  labs(title = "Nosepokes",
+       y = "density of nosepokes") +
+  theme_minimal(base_size = bSize, base_family = bFont) +
+  theme(strip.background = element_rect(fill = "lightgray", color = "white"),
+        strip.text = element_text(face = "italic", color = "gray30"),
+        panel.spacing = unit(1, "lines"))
+
+p3 <- visits %>% 
+  select(Session, Animal, Sex, Group, Start, StartDate, Module, Licks) %>% 
+  mutate(startTime = Start - hours(12) - minutes(30),
+         adjTime = hms::as_hms(startTime)) %>% 
+  
+  ggplot(aes(x = adjTime, y = after_stat(density), weight = Licks)) +
+  geom_density(fill = "lightblue", color = "steelblue", alpha = 0.85, adjust = 1) +
+#  geom_histogram(binwidth = 15 * 60, fill = "lightblue", color = "steelblue") +
+  annotate("rect", xmin = darkPhase$begin, xmax = darkPhase$end,
+           ymin = -1e-7, ymax = -1e-6, fill = "black", color = "gray25") +
+  
+  scale_x_continuous(name = "session time",
+                     breaks = c(0, 19800, 41400, 63000, 86400),
+                     labels = c("12:30", "18:00", "0:00", "6:00", "12:30")) +
+  labs(title = "Licks",
        y = "density of licks") +
   theme_minimal(base_size = bSize, base_family = bFont) +
   theme(strip.background = element_rect(fill = "lightgray", color = "white"),
@@ -729,15 +871,210 @@ p2 <- visits %>%
         panel.spacing = unit(1, "lines"))
 
 
-p1 + p2 +
+p1 + p2 + p3 +
   plot_annotation(title = paste("Cohort", cohort, "Activity Distribution over Session Time"),
-                  subtitle = "Summary of all mice across all sessions, licks combine water and alcohol",
+                  subtitle = "Smooth density curves across all mice and sessions",
                   tag_levels = "A",
-                  theme = theme(plot.title = element_text(size = 16),
+                  theme = theme(plot.title = element_text(size = bSize + 2),
                                 plot.subtitle = element_text(size = bSize)))
 
 ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-activity-hist.png")), width = 10, height = 7)
 
+```
+
+### Learning - Task Acquisition
+
+When animals reach the acquisition criteria for the FR ratio, they transition to the **Fixed Ratio 3x** module. The first successful licks within the module is take as the timestamp for the learning duration.
+
+```{r}
+#| label: fig-fr3-acquisition-plot
+#| fig-width: 8
+#| fig-height: 10
+#| fig-cap: "Time to first successful water lick on Fixed Ratio 3 (FR-3) during water training from the first FR session."
+
+# select the session for the FR training
+fr_session <- 2
+
+# the info table stores all session start times, so we can get the start time from there to calculate the
+#   duration until the FR3 ratio is reached. 
+
+# Step 1: find all animals that switched to the FR 3 module and licked water. Record their transtion time and calculate
+#   time duration since the session start.
+fr3_acquisition <- visits %>% 
+  filter(Session == fr_session & 
+           Module == "Fixed Ratio 3x" & 
+           Licks > 0) %>% 
+  group_by(Animal) %>% 
+  arrange(Start) %>% 
+  slice_head(n = 1) %>% 
+  ungroup() %>% 
+  mutate(hours_since_start = as.numeric(difftime(Start, info$Start[info$Session == fr_session], units = "hours"))) %>% 
+  select(Animal, Sex, Group, acquistion_time = Start, hours_since_start)
+
+# Step 2: create a dataframe with all mice to get the mice that might not have aquired.
+all_mice <- visits %>% 
+  filter(Session == fr_session) %>% 
+  distinct(Animal, .keep_all = T) %>% 
+  select(Animal, Sex, Group)
+
+# Step 2.5: we only have to join the 2 dataframes, if the all_mice one is larger, i.e. some mice never reached the FR3 module
+
+if (nrow(fr3_acquisition) < nrow(all_mice)) {
+  fr3_acquisition %>% 
+    left_join(all_animals, by = c("Animal", "Sex", "Group")) %>% 
+    mutate(hours_since_start = replace_na(24.0))
+} else {
+  rm(all_mice)
+}
+
+# Step 3: Calculate cumulative percentages
+cumulative_data <- fr3_acquisition %>%
+  arrange(hours_since_start) %>%
+  mutate(
+    cumulative_n = row_number(),
+    total_animals = n(),
+    cumulative_pct = as.numeric((cumulative_n / total_animals) * 100)
+  ) %>%
+  select(hours_since_start, cumulative_pct)
+
+# Cumulative plot of all mice
+p1 <- cumulative_data %>%
+  ggplot(aes(x = hours_since_start, y = cumulative_pct)) +
+  geom_step(linewidth = 1, direction = "hv", color = "steelblue") +
+#  geom_point(size = 3, color = "steelblue") +
+  
+  scale_y_continuous(name = "animals with successful FR-3 (%)",
+                     limits = c(0, 100),
+                     breaks = seq(0, 100, 25)) +
+  scale_x_continuous(name = "time (h)",
+                     limits = c(0, NA),
+                     n.breaks = 8) +
+  
+  labs(title = paste0("FR-3 Acquisition Timeline (Session ", fr_session, ")"),
+       subtitle = "Percentage of animals with first successful water lick on FR-3",
+       caption = paste0("Session ", fr_session, " started at: ", format(info$Start[info$Session == fr_session], "%Y-%m-%d %H:%M:%S"))) +
+  
+  theme_minimal(base_family = bFont, base_size = bSize) +
+  theme(panel.grid.minor = element_blank())
+
+# Individual animal timeline
+p2 <- fr3_acquisition %>%
+  arrange(Sex, hours_since_start) %>%
+  
+  ggplot(aes(x = hours_since_start, y = reorder(Animal, hours_since_start))) +
+  geom_segment(aes(x = 0, xend = hours_since_start, 
+                   y = Animal, yend = Animal),
+               linewidth = 0.5, color = "gray25") +
+  geom_point(aes(shape = Sex, fill = Sex), size = 3, color = "steelblue") +
+  
+  scale_shape_manual(values = c("Female" = 21, "Male" = 22)) +
+  sexFillScale +
+  scale_x_continuous(name = "time (h)",
+                     limits = c(0, NA),
+                     n.breaks = 8) +
+  labs(title = "Individual Animal FR-3 Acquisition",
+       subtitle = paste0("Time to first successful water lick FR-3 (Session ", fr_session, " )"),
+       y = "Animal ID") +
+  theme_minimal(base_family = bFont, base_size = bSize) +
+  theme(legend.position = "bottom",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(size = 7))
+
+# Combine plots using the patchwork library (loaded with the IC_EXP_Common.R file in the beginning)
+pnl <- p1 / p2 +
+  plot_layout(heights = c(2, 3),
+              guides = "collect") +
+  plot_annotation(title = "FR-3 Training Performance",
+                  tag_levels = "A",
+                  theme = theme(plot.title = element_text(size = bSize + 2),
+                  legend.position = "bottom")) &
+  guides(fill = "none")
+
+ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-fr3-acquisition-session2.pdf")), 
+       plot = pnl, width = 8, height = 10)
+
+pnl
+```
+### Visit Success
+
+```{r}
+#| label: fig-visit-success-rate-bars
+#| fig-width: 12
+#| fig-height: 6
+#| fig-cap: "Average percentage of visits that yielded licks during training and intermittent alcohol phases."
+
+# Calculate visit success rate per animal per day
+visit_success <- visits %>%
+  filter(!exp_Day %in% c(0, 5)) %>%  # Remove experimental days 0 and 5
+  mutate(
+    successful = Licks > 0,
+    Phase = if_else(exp_Day < 1, "Training", "Intermittent Alcohol"),
+    Phase = factor(Phase, levels = c("Training", "Intermittent Alcohol")),
+    Sex = as.character(Sex),
+    Group = as.character(Group)
+  ) %>%
+  group_by(exp_Day, Animal, Sex, Group, Phase) %>%
+  summarise(
+    total_visits = n(),
+    successful_visits = sum(successful),
+    success_rate = (successful_visits / total_visits) * 100,
+    .groups = "drop"
+  ) %>%
+  ungroup()
+
+# Calculate group averages
+visit_success_avg <- visit_success %>%
+  group_by(exp_Day, Phase) %>%
+  summarise(
+    mean_success = mean(success_rate),
+    sem_success = sd(success_rate) / sqrt(n()),
+    .groups = "drop"
+  )
+
+p <- ggplot() +
+  # Bar for group average
+  geom_col(data = visit_success_avg, 
+           aes(x = exp_Day, y = mean_success),
+           fill = "steelblue", alpha = 0.6, width = 0.7) +
+  
+  # Error bars
+  geom_errorbar(data = visit_success_avg,
+                aes(x = exp_Day, 
+                    ymin = mean_success - sem_success, 
+                    ymax = mean_success + sem_success),
+                width = 0.3, linewidth = 0.5) +
+  
+  # Individual animal points with jitter
+  geom_jitter(data = visit_success,
+              aes(x = exp_Day, y = success_rate, shape = Sex),
+              size = 4, alpha = 0.6, color = "black", fill = "white",
+              width = 0.2, height = 0) +  # Only jitter horizontally
+  
+  scale_shape_manual(values = c("Female" = 21, "Male" = 22)) +
+  scale_y_continuous(name = "Success Rate (% ± SEM)",
+                     limits = c(0, 100),
+                     breaks = seq(0, 100, 25),
+                     expand = expansion(mult = c(0, 0.05))) +
+  scale_x_continuous(name = "Day",
+                     breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)) +
+  
+  labs(title = "Visit Success Rate",
+       subtitle = "% of visits that resulted in licks (bars = mean ± SEM; points = individual animals)") +
+  
+  theme_minimal(base_family = bFont, base_size = bSize) +
+  theme(legend.position = "bottom",
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        strip.background = element_rect(fill = "gray90", color = "gray70"),
+        strip.text = element_text(face = "bold", size = 11)) +
+  
+  facet_wrap(~ Phase, scales = "free_x")
+
+ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-visit-success-rate-bars-jitter.pdf")), 
+       plot = p, width = 12, height = 6)
+
+p
 ```
 
 ### Data export 
@@ -797,7 +1134,8 @@ If we want to look at the total licks (sum) of each group, the groups need to be
 #| fig-width: 12
 #| fig-height: 12
 
-maxSession <- visits %>% summarize(lastSession = max(Session)) %>% as.integer(.)
+# get the last session in this dataframe
+maxSession <- visits$Session[nrow(visits)]
 
 p1 <- visits %>% 
   filter(Sex == "Male") %>% 
@@ -837,12 +1175,12 @@ p2 <- visits %>%
 
 p1 / p2 +
   plot_annotation(tag_levels = "A",
-                  title = paste("Cohort ", cohort, "Training and Intermittent Alcohol"),
-                  subtitle = paste0("Session (1-", maxSession, ")")) + 
+                  title = paste("Cohort", cohort, "Training and Intermittent Alcohol"),
+                  subtitle = paste0("Session 1&ndash;", maxSession),
+                  theme = theme(plot.title = element_text(size = bSize + 2),
+                                plot.subtitle = element_markdown(size = bSize))) + 
   plot_layout(guides = "collect") &
-  guides(fill = guide_legend(title = "Drink")) &
-  theme(plot.title = element_text(size = 16),
-        plot.subtitle = element_text(size = bSize))
+  guides(fill = guide_legend(title = "Drink"))
 
 ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-drug-intake-individual-pref.png")), width = 12, height = 12)
 ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-drug-intake-indiv-onlyMales.png")), plot = p1, width = 12, height = 6)
