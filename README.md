@@ -10,6 +10,10 @@ The project template is centered around the analysis being done in notebook file
 
 The notebook contains a code chunk that will write the summarized data for each cohort as an `.rds` file, which can be quickly read without needed data wrangling. This leaves as a basic analysis structure at least one notebook for each cohort and one notebook file for a summary/combined analysis of all participating cohorts.
 
+## Graphical Data Output
+
+![Measured animal weights](/IC\ Template\ Project/figures/C1/c1-weight-changes.png)
+
 # Publications
 
 The IntelliCage programs have been used to generate the data sets contributing to the following publications:
