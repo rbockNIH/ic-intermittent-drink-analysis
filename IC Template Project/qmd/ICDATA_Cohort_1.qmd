@@ -921,7 +921,7 @@ all_mice <- visits %>%
 
 if (nrow(fr3_acquisition) < nrow(all_mice)) {
   fr3_acquisition %>% 
-    left_join(all_animals, by = c("Animal", "Sex", "Group")) %>% 
+    left_join(all_mice, by = c("Animal", "Sex", "Group")) %>% 
     mutate(hours_since_start = replace_na(24.0))
 } else {
   rm(all_mice)
