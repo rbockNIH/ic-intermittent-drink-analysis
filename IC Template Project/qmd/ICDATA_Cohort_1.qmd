@@ -749,7 +749,7 @@ p_combined <- p1 / p2 +
                   plot.subtitle = element_markdown(size = bSize - 4))
   )
 
-ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-qc-corner-occupancy-heatmap.pdf")), 
+ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-qc-corner-occupancy-heatmap.png")), 
        plot = p_combined, width = 10, height = 10)
 
 p_combined
