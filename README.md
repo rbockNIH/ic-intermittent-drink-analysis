@@ -12,7 +12,7 @@ The notebook contains a code chunk that will write the summarized data for each 
 
 ## Graphical Data Output
 
-![Measured animal weights](IC\ Template\ Project/figures/C1/c1-weight-changes.png)
+![Measured animal weights](IC%20Template%20Project/figures/C1/c1-weight-changes.png)
 
 # Publications
 
