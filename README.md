@@ -24,7 +24,7 @@ Examples of the generated graphs
 
 ### Drinking Preference
 
-![Drinking preference per day](IC%20Template%20Project/figures/C1/c1-drug-intake-individual-pref)
+![Drinking preference per day](IC%20Template%20Project/figures/C1/c1-drug-intake-individual-pref.png)
 
 # Publications
 
