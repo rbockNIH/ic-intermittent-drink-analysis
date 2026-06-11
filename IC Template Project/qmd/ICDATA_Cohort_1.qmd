@@ -661,7 +661,7 @@ p1
 
 ```{r}
 #| label: fig-qc-corner-occupancy-heatmap
-#| fig-width: 10
+#| fig-width: 9
 #| fig-height: 10
 
 # Prepare data with phase labels
@@ -669,15 +669,13 @@ heatmap_data <- visits %>%
   mutate(vd = as.numeric(End - Start, units = "hours")) %>%
   group_by(Animal, Sex, Group, exp_Day, Corner, drink) %>% 
   summarize(total_hours = sum(vd), .groups = "drop") %>%
-  mutate(Phase = case_when(
-    exp_Day < 1 ~ "Training (Water Only)",
-    exp_Day >= 1 ~ "Intermittent Alcohol"
-  ))
+  mutate(Phase = if_else(exp_Day < 1, 
+                         "Training (Water Only)",
+                         "Intermittent Alcohol"))
 
 # Training phase heatmap
 p1 <- heatmap_data %>%
-  filter(Phase == "Training (Water Only)" &
-           !exp_Day %in% c(0, 5)) %>%
+  filter(Phase == "Training (Water Only)") %>%
   
   ggplot(aes(x = exp_Day, y = Animal, fill = total_hours)) +
   geom_tile(color = "white", linewidth = 0.5) +
@@ -690,7 +688,7 @@ p1 <- heatmap_data %>%
     na.value = "gray90"
   ) +
   scale_x_continuous(name = "experimental day",
-                     breaks = seq(-5, -1, 1),
+                     n.breaks = 5,
                      expand = c(0, 0)) +
   
   labs(title = "Training Phase: Corner Occupancy",
@@ -708,8 +706,7 @@ p1 <- heatmap_data %>%
 
 # Alcohol phase heatmap
 p2 <- heatmap_data %>%
-  filter(Phase == "Intermittent Alcohol" &
-           !exp_Day %in% c(0, 5)) %>%
+  filter(Phase == "Intermittent Alcohol") %>%
   
   ggplot(aes(x = exp_Day, y = Animal, fill = total_hours)) +
   geom_tile(color = "white", linewidth = 0.5) +
@@ -723,7 +720,7 @@ p2 <- heatmap_data %>%
   ) +
   
   scale_x_continuous(name = "experimental day",
-                     breaks = seq(1, 4, 1)) +
+                     n.breaks = 8) +
   
   labs(title = "Intermittent Alcohol Phase: Corner Occupancy",
        y = "Animal ID") +
@@ -747,10 +744,11 @@ p_combined <- p1 / p2 +
     subtitle = md("Fire scale: White (0h) &rarr; Yellow &rarr; Orange &rarr; Red &rarr; Dark Red (6+h). White tiles with borders represent no visits."),
     theme = theme(plot.title = element_text(size = bSize + 2, face = "bold"),
                   plot.subtitle = element_markdown(size = bSize - 4))
-  )
+  ) + 
+  plot_layout(guides = "collect")
 
 ggsave(here(paste0("figures/C", cohort), paste0("c", cohort, "-qc-corner-occupancy-heatmap.png")), 
-       plot = p_combined, width = 10, height = 10)
+       plot = p_combined, width = 9, height = 10)
 
 p_combined
 ```
