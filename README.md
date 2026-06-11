@@ -12,9 +12,19 @@ The notebook contains a code chunk that will write the summarized data for each 
 
 ## Graphical Data Output
 
+Examples of the generated graphs
+
 ### Weights
 
 ![Measured animal weights](IC%20Template%20Project/figures/C1/c1-weight-changes.png)
+
+### Corner Occupancy
+
+![Corner occupancy heatmap](IC%20Template%20Project/figures/C1/c1-qc-corner-occupancy-heatmap.png)
+
+### Drinking Preference
+
+![Drinking preference per day](IC%20Template%20Project/figures/C1/c1-drug-intake-individual-pref)
 
 # Publications
 
@@ -23,6 +33,9 @@ The IntelliCage programs have been used to generate the data sets contributing t
 1. Bocarsley, ME _et al._ **Preexisting risk-avoidance and enhanced alcohol relief are driven by imbalance of the striatal dopamine receptors in mice**. Nature Communications (2024), doi: [10.1038/s41467-024-53414-y](https://www.nature.com/articles/s41467-024-53414-y)
 2. Anderson LG _et al._ **Early life adversity increases striatal dopamine D1 receptor density and promotes social alcohol drinking in mice, especially males**. Translational Psychiatry (2026). doi: [10.1038/s41398-026-04033-2](https://www.nature.com/articles/s41398-026-04033-2)
     - bioRxiv (2025), doi: [10.1101/2025.11.10.687736](https://doi.org/10.1101/2025.11.10.687736)
+3. Anderson LG _et al._ **Automated Operant Intermittent Alcohol Drinking In Socially-Housed Mice via The Intellicage Testing System**. JoVE (2026). doi: [10.3791/71345
+](https://www.jove.com/t/71345/automated-operant-intermittent-alcohol-drinking-socially-housed-mice)
+
 
 # Who should I talk to?
 
